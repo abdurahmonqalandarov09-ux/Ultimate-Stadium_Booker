@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Заказ{% endblock %}
+{% block content %}
+<div class="detail glass">
+    {% if booking.field.photo %}
+        <img src="{{ booking.field.photo.url }}" alt="{{ booking.field.name }}">
+    {% else %}
+        <div class="no-img">⚽</div>
+    {% endif %}
+
+    <div class="detail-info">
+        <h1>{{ booking.field.name }}</h1>
+        <p><span class="badge">{{ booking.get_status_display }}</span></p>
+        <p class="muted">📍 {{ booking.field.address }}</p>
+        <p class="muted">Заказ от {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+        <p class="price">{{ booking.field.price }} сомони</p>
+
+        {% if booking.has_team %}
+            <p>Вы играете своей командой.</p>
+        {% else %}
+            <p>Нужно игроков: <b>{{ booking.players_needed }}</b></p>
+            <h3>Вступили:</h3>
+            <div class="players">
+                {% for p in booking.participants.all %}
+                    <a class="badge" href="{% url 'user_profile' p.user.pk %}">{{ p.user.username }}</a>
+                {% empty %}
+                    <span class="muted">Пока никого.</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="actions">
+            {% if booking.status == 'active' %}
+                <form method="POST" action="{% url 'finish_booking' booking.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-primary" type="submit">Завершить</button>
+                </form>
+                <form method="POST" action="{% url 'cancel_booking' booking.pk %}">
+                    {% csrf_token %}
+                    <button class="btn btn-danger" type="submit">Отменить</button>
+                </form>
+            {% endif %}
+            <a class="btn" href="{% url 'my_fields' %}">← Мои поля</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

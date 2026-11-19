@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block title %}{{ field.name }}{% endblock %}
+{% block content %}
+<div class="detail glass">
+    {% if field.photo %}
+        <img src="{{ field.photo.url }}" alt="{{ field.name }}">
+    {% else %}
+        <div class="no-img">⚽</div>
+    {% endif %}
+
+    <div class="detail-info">
+        <h1>{{ field.name }}</h1>
+        <p><span class="badge">{{ field.category.name }}</span></p>
+        <p class="muted">📍 {{ field.address }}</p>
+        <p>{{ field.description }}</p>
+        <p class="price">{{ field.price }} сомони за игру</p>
+
+        {% if field.is_free %}
+            <span class="badge badge-free">Свободно</span>
+        {% else %}
+            <span class="badge badge-busy">Занято</span>
+        {% endif %}
+
+        <div class="actions">
+            {% if field.is_free %}
+                <a class="btn btn-primary" href="{% url 'book_field' field.pk %}">Заказать</a>
+            {% endif %}
+            <a class="btn" href="{% url 'fields' %}">← К каталогу</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Мои поля{% endblock %}
+{% block content %}
+<h1>Мои поля</h1>
+
+{% for booking in active %}
+    <div class="booking glass">
+        <div class="booking-head">
+            <h3>{{ booking.field.name }}</h3>
+            <span class="badge">{{ booking.get_status_display }}</span>
+        </div>
+        <p class="muted">Заказ от {{ booking.created_at|date:"d.m.Y H:i" }}</p>
+        <p>{% if booking.has_team %}Играете своей командой{% else %}Нужно игроков: {{ booking.players_needed }}{% endif %}</p>
+        <div class="actions">
+            <a class="btn btn-sm" href="{% url 'booking_detail' booking.pk %}">Посмотреть</a>
+            <form method="POST" action="{% url 'finish_booking' booking.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-primary btn-sm" type="submit">Завершить</button>
+            </form>
+            <form method="POST" action="{% url 'cancel_booking' booking.pk %}">
+                {% csrf_token %}
+                <button class="btn btn-danger btn-sm" type="submit">Отменить</button>
+            </form>
+        </div>
+    </div>
+{% empty %}
+    <p class="empty glass">У вас нет активных заказов. <a href="{% url 'fields' %}"><b>Выбрать поле</b></a></p>
+{% endfor %}
+
+<h2>История</h2>
+{% for booking in history %}
+    <div class="booking glass">
+        <div class="booking-head">
+            <h3>{{ booking.field.name }}</h3>
+            <span class="badge">{{ booking.get_status_display }}</span>
+        </div>
+        <p class="muted">{{ booking.created_at|date:"d.m.Y H:i" }}</p>
+    </div>
+{% empty %}
+    <p class="empty glass">История пока пуста.</p>
+{% endfor %}
+{% endblock %}

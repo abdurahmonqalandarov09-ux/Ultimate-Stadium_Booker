@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Играем вместе{% endblock %}
+{% block content %}
+<h1>Играем вместе</h1>
+<p class="muted">Заказы, где не хватает игроков. Присоединяйтесь!</p>
+
+{% for booking in bookings %}
+    <div class="booking glass">
+        <div class="booking-head">
+            <h3>{{ booking.field.name }}</h3>
+            <span class="badge">{{ booking.field.category.name }}</span>
+        </div>
+        <p class="muted">📍 {{ booking.field.address }}</p>
+        <p>Организатор: <a href="{% url 'user_profile' booking.user.pk %}"><b>{{ booking.user.username }}</b></a></p>
+        <p>Нужно игроков: <b>{{ booking.players_needed }}</b> · вступили: <b>{{ booking.joined }}</b></p>
+
+        <div class="players">
+            {% for p in booking.participants.all %}
+                <a class="badge" href="{% url 'user_profile' p.user.pk %}">{{ p.user.username }}</a>
+            {% endfor %}
+        </div>
+
+        <div class="actions">
+            {% if booking.user != user %}
+                {% if booking.id in joined_ids %}
+                    <form method="POST" action="{% url 'leave_booking' booking.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-danger btn-sm" type="submit">Выйти из команды</button>
+                    </form>
+                {% elif booking.joined < booking.players_needed %}
+                    <form method="POST" action="{% url 'join_booking' booking.pk %}">
+                        {% csrf_token %}
+                        <button class="btn btn-primary btn-sm" type="submit">Вступить в команду</button>
+                    </form>
+                {% else %}
+                    <span class="badge badge-busy">Мест нет</span>
+                {% endif %}
+            {% else %}
+                <span class="badge">Это ваш заказ</span>
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p class="empty glass">Сейчас нет заказов, которым нужны игроки.</p>
+{% endfor %}
+{% endblock %}

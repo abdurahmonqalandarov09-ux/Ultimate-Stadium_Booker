@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Профиль{% endblock %}
+{% block content %}
+<div class="profile glass">
+    {% if user.photo %}
+        <img class="avatar" src="{{ user.photo.url }}" alt="{{ user.username }}">
+    {% else %}
+        <div class="avatar">{{ user.username|slice:":1"|upper }}</div>
+    {% endif %}
+    <h1>{{ user.username }}</h1>
+
+    <dl>
+        <dt>Email</dt><dd>{{ user.email|default:"не указан" }}</dd>
+        <dt>Телефон</dt><dd>{{ user.phone|default:"не указан" }}</dd>
+        <dt>О себе</dt><dd>{{ user.about|default:"пусто" }}</dd>
+        <dt>Заказов</dt><dd>{{ bookings_count }}</dd>
+    </dl>
+
+    <div class="actions" style="justify-content:center">
+        <a class="btn btn-primary" href="{% url 'edit_profile' %}">Редактировать</a>
+        <a class="btn" href="{% url 'logout' %}">Выйти</a>
+    </div>
+</div>
+{% endblock %}

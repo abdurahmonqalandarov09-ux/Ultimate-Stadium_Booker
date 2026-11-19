@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Заказ поля{% endblock %}
+{% block content %}
+<form class="form glass" method="POST">
+    {% csrf_token %}
+    <h1>Заказ: {{ field.name }}</h1>
+    <p class="muted" style="text-align:center">{{ field.category.name }} · {{ field.price }} сомони</p>
+
+    <label>Есть ли у вас команда?</label>
+    <div class="radio-row">
+        <label><input type="radio" name="has_team" value="yes" checked onchange="toggleNeeded()"> Да</label>
+        <label><input type="radio" name="has_team" value="no" onchange="toggleNeeded()"> Нет</label>
+    </div>
+
+    <div id="needed" style="display:none">
+        <label>Сколько игроков не хватает?</label>
+        <input type="number" name="players_needed" min="1" placeholder="Например, 3">
+    </div>
+
+    <button class="btn btn-primary" type="submit">Заказать поле</button>
+    <a class="btn" href="{% url 'field_detail' field.pk %}">Отмена</a>
+</form>
+
+<script>
+    function toggleNeeded() {
+        var noTeam = document.querySelector('input[name="has_team"][value="no"]').checked;
+        document.getElementById('needed').style.display = noTeam ? 'block' : 'none';
+    }
+</script>
+{% endblock %}

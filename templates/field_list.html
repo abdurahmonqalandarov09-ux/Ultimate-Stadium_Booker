@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Поля{% endblock %}
+{% block content %}
+<h1>Футбольные поля</h1>
+
+<form class="filter glass" method="GET" action="{% url 'fields' %}">
+    <input class="wide" type="text" name="q" value="{{ q }}" placeholder="Поиск по названию или адресу">
+
+    <select name="category">
+        <option value="">Все форматы</option>
+        {% for c in categories %}
+            <option value="{{ c.id }}" {% if category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.name }}</option>
+        {% endfor %}
+    </select>
+
+    <select name="status">
+        <option value="">Любой статус</option>
+        <option value="free" {% if status == "free" %}selected{% endif %}>Свободные</option>
+        <option value="busy" {% if status == "busy" %}selected{% endif %}>Занятые</option>
+    </select>
+
+    <input type="number" name="min_price" value="{{ min_price }}" placeholder="Цена от">
+    <input type="number" name="max_price" value="{{ max_price }}" placeholder="Цена до">
+
+    <select name="sort">
+        <option value="">Без сортировки</option>
+        <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Сначала дешёвые</option>
+        <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Сначала дорогие</option>
+    </select>
+
+    <div class="filter-actions">
+        <button class="btn btn-primary" type="submit">Найти</button>
+        <a class="btn" href="{% url 'fields' %}">Сбросить</a>
+    </div>
+</form>
+
+<div class="grid" style="margin-top:20px">
+    {% for field in fields %}
+        <a class="card glass" href="{% url 'field_detail' field.pk %}">
+            {% if field.photo %}
+                <img src="{{ field.photo.url }}" alt="{{ field.name }}">
+            {% else %}
+                <div class="no-img">⚽</div>
+            {% endif %}
+            <div class="card-body">
+                <h3>{{ field.name }}</h3>
+                <p class="muted">{{ field.category.name }} · {{ field.address }}</p>
+                <div class="card-row">
+                    <span class="price">{{ field.price }} сомони</span>
+                    {% if field.is_free %}
+                        <span class="badge badge-free">Свободно</span>
+                    {% else %}
+                        <span class="badge badge-busy">Занято</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+    {% empty %}
+        <p class="empty glass" style="grid-column:1/-1">Ничего не найдено.</p>
+    {% endfor %}
+</div>
+{% endblock %}
